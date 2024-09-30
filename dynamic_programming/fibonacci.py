@@ -41,23 +41,20 @@ def fibonacci(n: int) -> int:
 # Indice: la fonction doit être récursive.
 
 
-def fibonacci_memo(n: int) -> int:
+def fibonacci_memo(n: int, memo:dict[int, int] = {}) -> int:
     """
     Calcule le n-ième terme de la suite de Fibonacci, en mémorisant les
     résultats intermédiaires.
     """
 
     # BEGIN SOLUTION
-    def _fibonacci_memo(n: int, memo: dict[int, int]) -> int:
-        if n in memo:
-            return memo[n]
-        if n == 0:
-            memo[n] = 0
-        elif n == 1:
-            memo[n] = 1
-        else:
-            memo[n] = _fibonacci_memo(n - 1, memo) + _fibonacci_memo(n - 2, memo)
+    if n in memo:
         return memo[n]
-
-    return _fibonacci_memo(n, {})
+    if n == 0:
+        memo[n] = 0
+    elif n == 1:
+        memo[n] = 1
+    else:
+        memo[n] = fibonacci_memo(n - 1, memo) + fibonacci_memo(n - 2, memo)
+    return memo[n]
     # END SOLUTION
