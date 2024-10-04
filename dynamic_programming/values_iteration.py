@@ -65,6 +65,36 @@ def grid_world_value_iteration(
     """
     values = np.zeros((4, 4))
     # BEGIN SOLUTION
+    converge = False
+    i = 0
+    while not converge and i < max_iter:
+        delta = 0.0
+        for row in range(env.height):
+            for col in range(env.width):
+                if env.grid[row, col] == "W":
+                    continue
+                v = values[row, col].copy()
+                max_a = -np.inf
+                for action in range(env.action_space.n):
+                    next_state = env.direction_table[action]()
+                    if env.grid[tuple(next_state)] != "W":
+                        reward = 0
+                        if env.grid[tuple(next_state)] == "P":
+                            reward = 1
+                        elif env.grid[tuple(next_state)] == "N":
+                            reward = -1
+                    else:
+                        next_state = (row, col)
+
+                    action_value = reward + gamma * values[next_state]
+                    max_a = max(max_a, action_value)
+
+                values[row, col] = max_a
+                delta = max(delta, abs(v - values[row, col]))
+        if delta < theta:
+            converge = True
+        i += 1
+    return values
     # END SOLUTION
 
 
