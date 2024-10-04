@@ -26,6 +26,29 @@ def mdp_value_iteration(mdp: MDP, max_iter: int = 1000, gamma=1.0) -> np.ndarray
     """
     values = np.zeros(mdp.observation_space.n)
     # BEGIN SOLUTION
+    converge = False
+    i = 0
+    # tant que la valeur de chaque état n'a pas convergé et qu'on n'a pas atteint le max_iter
+    while(not converge and i < max_iter):
+        delta = 0.0
+        # pour chaque état estimer la fonction de valeur
+        for state in range(mdp.observation_space.n):
+            # on garde en copy la valeur courante de cet état
+            v = values[state].copy()
+            max_a = -np.inf
+            # choisir l'action qui maximise la valeur
+            for action in range(mdp.action_space.n):
+                next_state, reward, done = mdp.P[state][action]
+                action_value = reward + gamma * values[next_state]
+                max_a = max(max_a, action_value)
+            # mettre à jour la valeur de l'état
+            values[state] = max_a
+            delta = max(delta, abs(v - values[state]))
+
+        if delta < 1e-5:
+            converge = True
+        i += 1
+
     # END SOLUTION
     return values
 
