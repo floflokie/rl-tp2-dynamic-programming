@@ -64,36 +64,44 @@ def grid_world_value_iteration(
     theta est le seuil de convergence (différence maximale entre deux itérations).
     """
     values = np.zeros((4, 4))
+    print(env.grid)
     # BEGIN SOLUTION
     converge = False
     i = 0
-    while not converge and i < max_iter:
+    # tant que la valeur de chaque état n'a pas convergé et qu'on n'a pas atteint le max_iter
+    while(not converge and i < max_iter):
         delta = 0.0
+        prev_values = values.copy()
+        # pour chaque case estimer la fonction de valeur
         for row in range(env.height):
             for col in range(env.width):
-                if env.grid[row, col] == "W":
+                
+                # Si la case est un état terminal, on ne fait rien
+                if env.grid[row, col] == 'P' or env.grid[row, col] == 'N':
                     continue
-                v = values[row, col].copy()
-                max_a = -np.inf
+                # Si la case est un mur, on met la valeur à 0 et on s'arrête
+                if env.grid[row, col] == 'W':
+                    values[row, col] = 0
+                    continue
+                
+                env.set_state(row, col)
+                max_value = -np.inf
+                
+                # Choisir l'action qui maximise la valeur de l'état
                 for action in range(env.action_space.n):
-                    next_state = env.direction_table[action]()
-                    if env.grid[tuple(next_state)] != "W":
-                        reward = 0
-                        if env.grid[tuple(next_state)] == "P":
-                            reward = 1
-                        elif env.grid[tuple(next_state)] == "N":
-                            reward = -1
-                    else:
-                        next_state = (row, col)
-
-                    action_value = reward + gamma * values[next_state]
-                    max_a = max(max_a, action_value)
-
-                values[row, col] = max_a
-                delta = max(delta, abs(v - values[row, col]))
+                    next_state, reward, _, _ = env.step(action, make_move=False)
+                    next_row, next_col = next_state
+                    value = reward + gamma * prev_values[next_row, next_col]
+                    max_value = max(max_value, value)
+                
+                # Mettre à jour la valeur de l'état
+                values[row, col] = max_value
+                delta = max(delta, abs(values[row, col] - prev_values[row, col]))
+        
         if delta < theta:
             converge = True
         i += 1
+    
     return values
     # END SOLUTION
 
@@ -125,3 +133,4 @@ def stochastic_grid_world_value_iteration(
 ) -> np.ndarray:
     values = np.zeros((4, 4))
     # BEGIN SOLUTION
+    # End SOLUTION
