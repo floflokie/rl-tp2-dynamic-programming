@@ -133,4 +133,20 @@ def stochastic_grid_world_value_iteration(
 ) -> np.ndarray:
     values = np.zeros((4, 4))
     # BEGIN SOLUTION
-    # End SOLUTION
+    diff = float("inf")
+    iteration_count = 0
+
+    while iteration_count < max_iter:
+        temp_values = values.copy()
+
+        for x in range(4):
+            for y in range(4):
+                env.set_state(x, y)
+                diff = value_iteration_per_state(env, values, gamma, temp_values, diff)
+        
+        if diff < theta:
+            break
+        
+        iteration_count += 1
+    return values
+    # END SOLUTION
